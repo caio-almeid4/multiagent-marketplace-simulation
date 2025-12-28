@@ -6,6 +6,7 @@ import yaml
 from agents.states.agent import AgentState
 from schemas.agent import AgentConfig
 from utils.render_template import render_template
+from langchain_core.messages import SystemMessage
 
 
 def load_agent_config(name: str):
@@ -15,12 +16,11 @@ def load_agent_config(name: str):
     with open(filepath, "r", encoding="utf-8") as f:
         config = yaml.safe_load(f)
 
-    system_prompt = render_template("system_prompt", config)
+    system_prompt = SystemMessage(render_template("system_prompt", config))
 
-    agent_state = AgentState(**config["initial_state"], inbox=[], internal_monologue="")
+    agent_state = AgentState(**config["initial_state"], inbox=[], internal_monologue="", messages=[system_prompt])
 
     return AgentConfig(
-        system_prompt=system_prompt,
         temperature=config["temperature"],
         state=agent_state,
     )
