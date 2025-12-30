@@ -1,0 +1,6 @@
+MESSAGES THAT YOU RECEIVE IN YOUR INBOX:
+
+{{% for message in inbox %}}
+{{ loop.index }}
+- Sender: {{ message.sender }}
+- Content: {{ message.content }}
