@@ -2,11 +2,11 @@ from pathlib import Path
 from typing import List
 
 import yaml
+from langchain_core.messages import SystemMessage
 
 from agents.states.agent import AgentState
 from schemas.agent import AgentConfig
 from utils.render_template import render_template
-from langchain_core.messages import SystemMessage
 
 
 def load_agent_config(name: str):
@@ -18,9 +18,16 @@ def load_agent_config(name: str):
 
     system_prompt = SystemMessage(render_template("system_prompt", config))
 
-    agent_state = AgentState(**config["initial_state"], inbox=[], internal_monologue="", messages=[system_prompt])
+    agent_state = AgentState(
+        **config["initial_state"],
+        inbox=[],
+        internal_monologue="",
+        messages=[system_prompt],
+        next_step="",
+    )
 
     return AgentConfig(
+        name=name,
         temperature=config["temperature"],
         state=agent_state,
     )
