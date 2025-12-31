@@ -3,13 +3,13 @@ from typing import Dict
 
 from models.agent import Agent
 from models.market import Market
-from schemas.inventory import Inventory
 from schemas.simulation import SimulationSettings
 from utils.tools_factory import create_trade_tools
 
+from loguru import logger
+
 
 class Simulation:
-
     def __init__(
         self, settings: SimulationSettings, agents: Dict[str, Agent], market: Market
     ):
@@ -21,27 +21,17 @@ class Simulation:
 
         self._provide_tools()
         agents_queue = [name for name in self.agents.keys()]
-
-        for i in range(self.simulation_settings.rounds):
+        for i in range(1, self.simulation_settings.rounds + 1):
+            logger.info(f'----ROUND {i}----')
             shuffle(agents_queue)
-            
             for agent in agents_queue:
-
-                market_data = self.market.format_public_board()
-                self.agents[agent].run_turn(market_data=market_data)
-            print(self.market.public_board)
-
-    def get_agent_inventory(self, agent_name: str) -> Inventory:
-
-        agent_state = self.agents[agent_name].state
-        inventory = Inventory(
-            cash=agent_state["cash"],
-            apple=agent_state["apple"],
-            chip=agent_state["chip"],
-            gold=agent_state["gold"],
-        )
-
-        return inventory
+                logger.info(f'{agent.upper()} turn')
+                market_data = self.market.format_repository()
+                self.agents[agent].run_turn(market_data=market_data, round_num=i)
+                
+                
+            if i % 2 == 0:
+                self.market.clear_repository()
 
     def _provide_tools(self) -> None:
 
