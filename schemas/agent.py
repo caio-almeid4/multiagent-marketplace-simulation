@@ -1,22 +1,28 @@
-from typing import Literal
+from typing import Literal, List
 
 from pydantic import BaseModel, Field
 
-from agents.states.agent import AgentState
+from schemas.inventory import Inventory
 
 
+class PersonalityInfo(BaseModel):
+    personality: str
+    background: str
+    objective: str
+    strategy: str
+    custom_instructions: List[str]
+    decision_biases: List[str]
+    
 class AgentConfig(BaseModel):
-
     name: str
     temperature: float = Field(ge=0, le=1)
-    state: AgentState
+    inventory: Inventory
+    personality_info: PersonalityInfo
 
 
 class AgentResponse:
-
-    next_step: Literal["manage_offers", "manage_inbox", "wait"]
+    next_step: Literal['manage_offers', 'manage_inbox', 'wait']
 
 
 class AgentAnalysis(AgentResponse):
-
     updated_monologue: str

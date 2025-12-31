@@ -1,0 +1,22 @@
+from datetime import datetime
+
+from sqlalchemy import func
+from sqlalchemy.orm import Mapped, mapped_column, registry
+from db import table_registry
+
+
+@table_registry.mapped_as_dataclass
+class Trade:
+    __tablename__ = 'trades'
+    
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    supplier: Mapped[str] = mapped_column(nullable=False)
+    buyer: Mapped[str] = mapped_column(nullable=False)
+    item: Mapped[int] = mapped_column(nullable=False)
+    quantity: Mapped[int] = mapped_column(nullable=False)
+    price: Mapped[float] = mapped_column(nullable=False)
+    message: Mapped[str]
+    created_at: Mapped[datetime] = mapped_column(
+        init=False, server_default=func.now()
+    )
+    
